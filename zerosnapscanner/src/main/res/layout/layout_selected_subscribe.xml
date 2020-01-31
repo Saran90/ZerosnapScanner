@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:id="@+id/ll_selected_subscription"
+    android:visibility="gone"
+    android:background="@color/white">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/rl_selected_subscription_close"
+        android:layout_gravity="right"
+        android:onClick="onSelectedSubscriptionCloseClicked"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="10dp">
+
+        <ImageView
+            android:layout_width="@dimen/subscription_close_layout_height"
+            android:layout_height="@dimen/subscription_close_layout_height"
+            android:background="@drawable/ic_close_png"
+            android:padding="10dp"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:id="@+id/tv_title"
+        android:text="@string/subscription_dialog_title"
+        android:textColor="@color/black_dark"
+        android:gravity="center_horizontal"
+        android:textStyle="bold"
+        android:textSize="@dimen/subscription_dialog_title"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:id="@+id/tv_description"
+        android:text="@string/subscription_dialog_title"
+        android:textColor="@color/black"
+        android:textSize="@dimen/subscription_dialog_description"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="30dp"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.50">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:id="@+id/tv_selected_price"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/selected_subscription_dialog_price"/>
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.50">
+
+            <Button
+                android:id="@+id/btn_subscribe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/bg_subscribe"
+                android:gravity="center"
+                android:text="@string/subscribe_title"
+                android:textColor="@color/white"
+                android:textSize="@dimen/submit_button_font" />
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

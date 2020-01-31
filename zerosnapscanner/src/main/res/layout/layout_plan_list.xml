@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimaryDark">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="40dp"
+        android:background="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_pay_as_you_go"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/payment_type_title_height"
+                android:background="#F24740"
+                android:gravity="center_vertical"
+                android:paddingLeft="20dp"
+                android:text="@string/subscription_pay_as_you_go"
+                android:onClick="onPayAsYouGoClicked"
+                android:textColor="@color/white"
+                android:drawableRight="@drawable/ic_arrow_up"/>
+
+            <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+                android:id="@+id/erl_pay_as_you_go"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:minHeight="120dp"
+                app:ael_duration="500"
+                app:ael_expanded="true"
+                android:background="#70F24740"
+                app:ael_interpolator="accelerateDecelerate"
+                app:ael_orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginLeft="10dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="No: of scans: "
+                                    android:textSize="15dp"
+                                    android:textColor="@color/black_dark"
+                                    android:layout_marginRight="10dp"/>
+
+                                <EditText
+                                    android:layout_width="100dp"
+                                    android:layout_height="30dp"
+                                    android:hint="Enter"
+                                    android:id="@+id/et_scan_count"
+                                    android:textColorHint="@color/material_blue_grey_80"
+                                    android:paddingLeft="10dp"
+                                    android:inputType="number"
+                                    android:textSize="15dp"
+                                    android:maxLength="2"
+                                    android:textColor="@color/black_dark"
+                                    android:background="@drawable/bg_bottom_sheet_edittext"/>
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="20dp"
+                                android:layout_marginLeft="10dp">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="Amount to pay: "
+                                    android:textSize="15dp"
+                                    android:textColor="@color/black_dark"
+                                    android:layout_marginRight="10dp"/>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text=""
+                                    android:textSize="25dp"
+                                    android:id="@+id/tv_pay_as_you_go_price"
+                                    android:textColor="@color/black_dark"
+                                    android:layout_marginRight="10dp"/>
+
+                            </LinearLayout>
+
+                        </LinearLayout>
+
+                        <Button
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/payment_button_height"
+                            android:id="@+id/btn_pay_as_you_go_pay"
+                            android:text="@string/pay"
+                            android:clickable="false"
+                            android:enabled="false"
+                            android:textColor="@color/white"
+                            android:paddingLeft="5dp"
+                            android:paddingRight="5dp"
+                            android:onClick="onPayAsYouGoPayClicked"
+                            android:background="@drawable/bg_monthly_pay_button"
+                            android:layout_alignParentBottom="true"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginRight="10dp"/>
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+            </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_monthly"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/payment_type_title_height"
+                android:background="@color/monthly_color"
+                android:gravity="center_vertical"
+                android:paddingLeft="20dp"
+                android:onClick="onMonthlyClicked"
+                android:text="@string/subscription_monthly"
+                android:textColor="@color/white"
+                android:drawableRight="@drawable/ic_arrow_down"/>
+
+            <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+                android:id="@+id/erl_monthly"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:minHeight="120dp"
+                app:ael_duration="500"
+                app:ael_expanded="false"
+                android:background="@color/monthly_color_light"
+                app:ael_interpolator="accelerateDecelerate"
+                app:ael_orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Amount to pay:"
+                            android:textSize="15dp"
+                            android:textColor="@color/black_dark"
+                            android:layout_marginRight="10dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv_monthly_price"
+                            android:text=""
+                            android:textColor="@color/black_dark"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="10dp"
+                            android:textSize="@dimen/payment_price_font"/>
+
+                    </LinearLayout>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/payment_button_height"
+                        android:id="@+id/btn_monthly_pay"
+                        android:text="@string/pay"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textColor="@color/white"
+                        android:onClick="onMonthlyPayClicked"
+                        android:background="@drawable/bg_monthly_pay_button"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginRight="10dp"/>
+
+                </RelativeLayout>
+
+            </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+
+            <TextView
+                android:id="@+id/tv_yearly"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/payment_type_title_height"
+                android:background="#FC9501"
+                android:gravity="center_vertical"
+                android:paddingLeft="20dp"
+                android:onClick="onYearlyClicked"
+                android:text="@string/subscription_annual"
+                android:textColor="@color/white"
+                android:drawableRight="@drawable/ic_arrow_down"/>
+
+            <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+                android:id="@+id/erl_yearly"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:minHeight="120dp"
+                app:ael_duration="500"
+                app:ael_expanded="false"
+                android:background="#70FC9501"
+                app:ael_interpolator="accelerateDecelerate"
+                app:ael_orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dp"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Amount to pay:"
+                            android:textSize="15dp"
+                            android:textColor="@color/black_dark"
+                            android:layout_marginRight="10dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv_yearly_price"
+                            android:text=""
+                            android:textColor="@color/black_dark"
+                            android:layout_centerVertical="true"
+                            android:layout_marginLeft="10dp"
+                            android:textSize="@dimen/payment_price_font"/>
+
+                    </LinearLayout>
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/payment_button_height"
+                        android:id="@+id/btn_yearly_pay"
+                        android:text="@string/pay"
+                        android:paddingLeft="5dp"
+                        android:paddingRight="5dp"
+                        android:textColor="@color/white"
+                        android:onClick="onAnnuallyPayClicked"
+                        android:background="@drawable/bg_monthly_pay_button"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginRight="10dp"/>
+
+                </RelativeLayout>
+
+            </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:background="@color/colorPrimaryDark"
+        android:textSize="@dimen/conditions_apply"
+        android:text="@string/conditions_apply"
+        />
+
+</RelativeLayout>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="subscription_close_layout_height">20dp</dimen>
+    <dimen name="subscription_dialog_title">18dp</dimen>
+    <dimen name="subscription_dialog_smiley">20dp</dimen>
+    <dimen name="subscription_dialog_subtitle">15dp</dimen>
+    <dimen name="subscription_dialog_description">16dp</dimen>
+    <dimen name="selected_subscription_dialog_price">26dp</dimen>
+    <dimen name="submit_button_font">15dp</dimen>
+    <dimen name="payment_type_title_height">40dp</dimen>
+    <dimen name="payment_button_height">30dp</dimen>
+    <dimen name="payment_price_font">25dp</dimen>
+    <dimen name="conditions_apply">12dp</dimen>
+</resources>

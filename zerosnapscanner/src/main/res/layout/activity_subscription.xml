@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="320dp"
+    android:layout_gravity="center_horizontal"
+    android:layout_height="wrap_content"
+    tools:context=".SubscriptionActivity"
+    android:background="@drawable/bg_subscription">
+
+    <include
+        layout="@layout/layout_subscription_list"/>
+
+    <include
+        layout="@layout/layout_selected_subscribe"/>
+
+    <!--<include-->
+    <!--layout="@layout/layout_selected_subscribe_free_trial"/>-->
+
+</FrameLayout>

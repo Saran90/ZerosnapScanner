@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">ZerosnapScanner</string>
+    <string name="subscribe_title">Subscribe</string>
+    <string name="subscription_dialog_title">When you are a member!!</string>
+    <string name="cancel_anytime_subtitle">You won\'t be charged for next cycle</string>
+    <string name="enjoy_free_scan">Enjoy free scans</string>
+    <string name="cancel_anytime">Cancel anytime you want</string>
+    <string name="subscription_pay_as_you_go">Pay as you go</string>
+    <string name="pay">Pay Now</string>
+    <string name="subscription_monthly">Monthly Subscription Plan</string>
+    <string name="subscription_annual">Annual Subscription Plan</string>
+    <string name="conditions_apply">* All pricing provided are inclusive of Applicable Taxes (18% GST)</string>
+    <string name="ruppee">\u20B9</string>
 </resources>
