@@ -6,6 +6,12 @@
     <application
         tools:node="merge">
         <activity android:name=".ZerosnapScannerActivity"></activity>
+        <activity android:name=".SubscriptionActivity"></activity>
+
+        <meta-data
+            android:name="com.razorpay.ApiKey"
+            android:value="@string/razor_pay_key" />
+
     </application>
 
 </manifest>

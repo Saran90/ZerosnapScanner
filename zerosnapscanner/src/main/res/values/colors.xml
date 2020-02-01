@@ -5,6 +5,7 @@
     <color name="white">#ffffff</color>
     <color name="green">#34af45</color>
     <color name="black_dark">#000000</color>
+    <color name="black">#000000</color>
     <color name="monthly_color">#607D8B</color>
     <color name="monthly_color_light">#70607D8B</color>
     <color name="material_blue_grey_80">#ff37474f</color>

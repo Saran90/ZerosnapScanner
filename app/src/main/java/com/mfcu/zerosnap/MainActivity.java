@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 public class MainActivity extends AppCompatActivity {
 
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    private String userId = "1";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         * Initializing Zerosnap Scanner with Document type and callback
         * */
         ZerosnapScanner.init(this,
-                ZerosnapScannerType.PASSPORT, new ZerosnapScannerCallback() {
+                ZerosnapScannerType.PASSPORT, userId,new ZerosnapScannerCallback() {
             @Override
             public void onPassportScanSuccess(PassportModel passportModel) {
                 String content = "First Name: "+passportModel.getFirstName();

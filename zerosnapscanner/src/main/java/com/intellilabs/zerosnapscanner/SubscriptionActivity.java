@@ -1,26 +1,25 @@
 package com.intellilabs.zerosnapscanner;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 import com.intellilabs.zerosnapscanner.addSubscription.AddSubscriptionRequest;
 import com.intellilabs.zerosnapscanner.addSubscription.AddSubscriptionResponse;
-import com.intellilabs.zerosnapscanner.checkSubscription.CheckSubscriptionResponse;
 import com.intellilabs.zerosnapscanner.subscriptionPlans.SubscriptionPlansResponse;
 import com.intellilabs.zerosnapscanner.verifySubscription.VerifySubscriptionRequest;
 import com.intellilabs.zerosnapscanner.verifySubscription.VerifySubscriptionResponse;
@@ -32,11 +31,16 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
-public class SubscriptionActivity extends Activity implements TextWatcher, PaymentResultWithDataListener {
+import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_CLIENT_ID;
+import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_LICENCE_KEY;
+import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_USER_ID;
+
+public class SubscriptionActivity extends Activity implements PaymentResultWithDataListener {
 
     private static final String TAG = SubscriptionActivity.class.getName();
 
@@ -49,32 +53,30 @@ public class SubscriptionActivity extends Activity implements TextWatcher, Payme
     public static final String SUBSCRIPTION_FLOW = "SUBSCRIPTION_FLOW";
     public static final String PACKAGE = "PACKAGE";
     public static final String NORMAL = "NORMAL";
+    public static final String ZEROSNAP_TOKEN = "zerosnap";
+    public static final String LICENCE_KEY = "Edapally@8899";
+
+    private String userId,licenceKey;
+
+    private AlertDialog alertDialog;
 
     TextView monthlyTitleTextView;
 
     TextView yearlyTitleTextView;
 
-    TextView payAsYouGoTitleTextView;
-
     ExpandableRelativeLayout monthlyExpandableRelativeLayout;
 
     ExpandableRelativeLayout yearlyExpandableRelativeLayout;
-
-    ExpandableRelativeLayout payAsYouGoExpandableRelativeLayout;
-
-    TextView payAsYouGoPriceTextView;
 
     TextView monthlyPriceTextView;
 
     TextView annuallyPriceTextView;
 
-    EditText scanCountEditText;
-
     Button monthlyPayButton;
 
     Button yearlyPayButton;
 
-    Button payAsYouGoPayButton;
+    private TextView textView;
 
     private List<SubscriptionPlansResponse.DataModel> subscriptDataModels;
     private String monthlyAmount = "";
@@ -89,7 +91,7 @@ public class SubscriptionActivity extends Activity implements TextWatcher, Payme
             selectedSubscriptionSecretId = "";
     private String selectedSubscriptionSubscribeId = "";
 
-    public void onCloseClicked() {
+    public void onCloseClicked(View view) {
         setResult(RESULT_CANCELED);
         finish();
     }
@@ -99,44 +101,18 @@ public class SubscriptionActivity extends Activity implements TextWatcher, Payme
         finish();
     }
 
-    public void onMonthlyClicked() {
+    public void onMonthlyClicked(View view) {
         yearlyExpandableRelativeLayout.collapse();
-        payAsYouGoExpandableRelativeLayout.collapse();
         monthlyExpandableRelativeLayout.expand();
         yearlyTitleTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_arrow_down), null);
-        payAsYouGoTitleTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_arrow_down), null);
         monthlyTitleTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_arrow_up), null);
     }
 
-    public void onYearlyClicked() {
+    public void onYearlyClicked(View view) {
         monthlyExpandableRelativeLayout.collapse();
-        payAsYouGoExpandableRelativeLayout.collapse();
         yearlyExpandableRelativeLayout.expand();
         monthlyTitleTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_arrow_down), null);
-        payAsYouGoTitleTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_arrow_down), null);
         yearlyTitleTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_arrow_up), null);
-    }
-
-    public void onPayAsYouGoClicked() {
-        monthlyExpandableRelativeLayout.collapse();
-        yearlyExpandableRelativeLayout.collapse();
-        payAsYouGoExpandableRelativeLayout.expand();
-        monthlyTitleTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_arrow_down), null);
-        yearlyTitleTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_arrow_down), null);
-        payAsYouGoTitleTextView.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.drawable.ic_arrow_up), null);
-    }
-
-    public void onPayAsYouGoPayClicked(View view) {
-        for (int i = 0; i < subscriptDataModels.size(); i++) {
-            if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                    .equalsIgnoreCase(PAY_AS_YOU_GO_SUBSCRIPTION_ID)) {
-                selectedSubscriptionId = subscriptDataModels.get(i).getSubscriptionPlanId();
-            }
-        }
-//        if (Double.parseDouble(selectedSubscriptionAmount) != 0)
-//            processOrder();
-//        else
-//            Toast.makeText(this, "Invalid scan count!", Toast.LENGTH_SHORT).show();
     }
 
     public void onMonthlyPayClicked(View view) {
@@ -148,7 +124,7 @@ public class SubscriptionActivity extends Activity implements TextWatcher, Payme
                 selectedSubscriptionAmount = subscriptDataModels.get(i).getSubscriptionAmount();
             }
         }
-//        processOrder();
+        processOrder();
     }
 
     public void onAnnuallyPayClicked() {
@@ -160,7 +136,7 @@ public class SubscriptionActivity extends Activity implements TextWatcher, Payme
                 selectedSubscriptionAmount = subscriptDataModels.get(i).getSubscriptionAmount();
             }
         }
-//        processOrder();
+        processOrder();
     }
 
     @Override
@@ -168,28 +144,21 @@ public class SubscriptionActivity extends Activity implements TextWatcher, Payme
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        if (getIntent().getStringExtra(SUBSCRIPTION_FLOW) != null) {
-            loadViewForPackage();
-        } else {
-//            checkSubscription();
-        }
+        userId = getIntent().getStringExtra(EXTRA_USER_ID);
+        licenceKey = getIntent().getStringExtra(EXTRA_LICENCE_KEY);
+        loadViewForPackage();
         new FileDeleteAsync().execute();
     }
 
     private void initViews(){
         monthlyTitleTextView = findViewById(R.id.tv_monthly);
         yearlyTitleTextView = findViewById(R.id.tv_yearly);
-        payAsYouGoTitleTextView = findViewById(R.id.tv_pay_as_you_go);
         monthlyExpandableRelativeLayout = findViewById(R.id.erl_monthly);
         yearlyExpandableRelativeLayout = findViewById(R.id.erl_yearly);
-        payAsYouGoExpandableRelativeLayout = findViewById(R.id.erl_pay_as_you_go);
-        payAsYouGoPriceTextView = findViewById(R.id.tv_pay_as_you_go_price);
         monthlyPriceTextView = findViewById(R.id.tv_monthly_price);
         annuallyPriceTextView = findViewById(R.id.tv_yearly_price);
-        scanCountEditText = findViewById(R.id.et_scan_count);
         monthlyPayButton = findViewById(R.id.btn_monthly_pay);
         yearlyPayButton = findViewById(R.id.btn_yearly_pay);
-        payAsYouGoPayButton = findViewById(R.id.btn_pay_as_you_go_pay);
     }
 
     private void deleteZerosnapFolder() {
@@ -217,48 +186,6 @@ public class SubscriptionActivity extends Activity implements TextWatcher, Payme
         }
     }
 
-//    private void checkSubscription() {
-//        SubscriptionService subscriptionService = RetrofitClientInstance
-//                .getRetrofitInstance().create(SubscriptionService.class);
-//        Call<CheckSubscriptionResponse> subscription = subscriptionService
-//                .checkSubscription(preferenceHelper.getZerosnapToken(),
-//                        preferenceHelper.getLicenceKey(),
-//                        preferenceHelper.getToken(), preferenceHelper.getBranch());
-//        RetrofitApiHelper<CheckSubscriptionResponse> retrofitApiHelper =
-//                new RetrofitApiHelper<CheckSubscriptionResponse>();
-//        retrofitApiHelper.performApiCall(subscription,
-//                new IRetrofitApiHelper<CheckSubscriptionResponse>() {
-//                    @Override
-//                    public void onSuccess(Response<CheckSubscriptionResponse> response) {
-//                        Log.d("TAG", "Response OK ");
-//                        if (response.body().getStatus() == 200) {
-//                            if (response.body()
-//                                    .getDataModel().getSubscriptionStatus() != null) {
-//                                String subscriptionStatus = response.body()
-//                                        .getDataModel().getSubscriptionStatus();
-//
-//                                if (subscriptionStatus.equalsIgnoreCase("0")) {
-////                                //If not subscribed
-//                                    loadView();
-//                                } else {
-//                                    //If subscribed
-//                                    setResult(RESULT_OK);
-//                                    finish();
-//                                }
-//                            } else {
-//                                loadView();
-//                            }
-//                        } else {
-//                            loadView();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onError(String message) {
-//                    }
-//                });
-//    }
-
     @Override
     public void onBackPressed() {
 //        super.onBackPressed();
@@ -268,145 +195,98 @@ public class SubscriptionActivity extends Activity implements TextWatcher, Payme
 
     public void loadView() {
         setContentView(R.layout.activity_subscription);
-//        getSubscriptionPlans();
+        initViews();
+        getSubscriptionPlans();
         yearlyExpandableRelativeLayout.collapse();
         monthlyExpandableRelativeLayout.collapse();
-        scanCountEditText.addTextChangedListener(this);
-//        initDialog();
         Checkout.preload(getApplicationContext());
     }
 
     public void loadViewForPackage() {
         setContentView(R.layout.activity_subscription);
-//        getSubscriptionPlans();
+        initViews();
+        getSubscriptionPlans();
         yearlyExpandableRelativeLayout.collapse();
-        monthlyExpandableRelativeLayout.collapse();
-        scanCountEditText.addTextChangedListener(this);
-//        initDialog();
+        monthlyExpandableRelativeLayout.expand();
         Checkout.preload(getApplicationContext());
-
-        monthlyTitleTextView.setClickable(false);
-        yearlyTitleTextView.setClickable(false);
     }
 
-//    public void getSubscriptionPlans() {
-//        SubscriptionService subscriptionService = RetrofitClientInstance
-//                .getRetrofitInstance().create(SubscriptionService.class);
-//        Call<SubscriptionPlansResponse> subscriptionPlans = subscriptionService
-//                .subscriptionPlans(preferenceHelper.getZerosnapToken(),
-//                        preferenceHelper.getToken(),
-//                        preferenceHelper.getLicenceKey());
-//        RetrofitApiHelper<SubscriptionPlansResponse> retrofitApiHelper =
-//                new RetrofitApiHelper<SubscriptionPlansResponse>();
-//        retrofitApiHelper.performApiCall(subscriptionPlans,
-//                new IRetrofitApiHelper<SubscriptionPlansResponse>() {
-//                    @Override
-//                    public void onSuccess(Response<SubscriptionPlansResponse> response) {
-//                        Log.d("TAG", "Response OK ");
-//                        if (response.body().getStatus() == 200) {
-//                            subscriptDataModels =
-//                                    response.body().getDataModel();
-//                            for (int i = 0; i < subscriptDataModels.size(); i++) {
-//                                if (subscriptDataModels.get(i).getSubscriptionPlanId()
-//                                        .equalsIgnoreCase("1")) {
-//                                    monthlyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-//                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
-//                                        .equalsIgnoreCase("2")) {
-//                                    annualAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-//                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
-//                                        .equalsIgnoreCase("5")) {
-//                                    weeklyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-//                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
-//                                        .equalsIgnoreCase("4")) {
-//                                    dailyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-//                                }
-//                            }
-//
-//                            monthlyPriceTextView.setText(getString(R.string.ruppee) + monthlyAmount);
-//                            annuallyPriceTextView.setText(getString(R.string.ruppee) + annualAmount);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onError(String message) {
-//                    }
-//                });
-//    }
+    public void getSubscriptionPlans() {
+        SubscriptionService subscriptionService = RetrofitClientInstance
+                .getRetrofitInstance().create(SubscriptionService.class);
+        Call<SubscriptionPlansResponse> subscriptionPlans = subscriptionService
+                .subscriptionPlans(ZEROSNAP_TOKEN,
+                        LICENCE_KEY);
+        RetrofitApiHelper<SubscriptionPlansResponse> retrofitApiHelper =
+                new RetrofitApiHelper<SubscriptionPlansResponse>();
+        retrofitApiHelper.performApiCall(subscriptionPlans,
+                new IRetrofitApiHelper<SubscriptionPlansResponse>() {
+                    @Override
+                    public void onSuccess(Response<SubscriptionPlansResponse> response) {
+                        Log.d("TAG", "Response OK ");
+                        if (response.body().getStatus() == 200) {
+                            subscriptDataModels =
+                                    response.body().getDataModel();
+                            for (int i = 0; i < subscriptDataModels.size(); i++) {
+                                if (subscriptDataModels.get(i).getSubscriptionPlanId()
+                                        .equalsIgnoreCase("1")) {
+                                    monthlyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
+                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
+                                        .equalsIgnoreCase("2")) {
+                                    annualAmount = subscriptDataModels.get(i).getSubscriptionAmount();
+                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
+                                        .equalsIgnoreCase("5")) {
+                                    weeklyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
+                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
+                                        .equalsIgnoreCase("4")) {
+                                    dailyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
+                                }
+                            }
 
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
-    @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
-    @Override
-    public void afterTextChanged(Editable editable) {
-        if (editable.toString().trim().equalsIgnoreCase("")) {
-            payAsYouGoPayButton.setEnabled(false);
-            payAsYouGoPayButton.setClickable(false);
-        } else {
-            payAsYouGoPayButton.setEnabled(true);
-            payAsYouGoPayButton.setClickable(true);
-            String count = editable.toString().trim();
-            scanCount = Float.parseFloat(count);
-            if (scanCount > 50) {
-                scanCount = 50;
-                scanCountEditText.setText("50");
-            }
-            if (subscriptDataModels != null) {
-                for (int i = 0; i < subscriptDataModels.size(); i++) {
-                    if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                            .equalsIgnoreCase(PAY_AS_YOU_GO_SUBSCRIPTION_ID)) {
-                        payAsYouGoAmount = scanCount * Double.parseDouble(subscriptDataModels
-                                .get(i).getSubscriptionAmount());
+                            monthlyPriceTextView.setText(getString(R.string.ruppee) + monthlyAmount);
+                            annuallyPriceTextView.setText(getString(R.string.ruppee) + annualAmount);
+                        }
                     }
-                }
-                payAsYouGoAmount = payAsYouGoAmount + (payAsYouGoAmount * 0.18);
-                payAsYouGoAmount = Double.parseDouble(String.format("%.2f", payAsYouGoAmount));
-                selectedSubscriptionAmount = String.valueOf(payAsYouGoAmount);
-                payAsYouGoPriceTextView.setText(getString(R.string.ruppee) + payAsYouGoAmount);
-            }
-        }
+
+                    @Override
+                    public void onError(String message) {
+                    }
+                });
     }
 
-//    public void processOrder() {
-//        showDialog();
-//        AddSubscriptionRequest addSubscriptionRequest = new AddSubscriptionRequest();
-//        addSubscriptionRequest.setBranchId(preferenceHelper.getBranch());
-//        addSubscriptionRequest.setSubscriptionPlanId(selectedSubscriptionId);
-//        addSubscriptionRequest.setTotalAmount(selectedSubscriptionAmount);
-//        addSubscriptionRequest.setDeviceType("android");
-//        addSubscriptionRequest.setDeviceToken(preferenceHelper.getFcmToken());
-//        addSubscriptionRequest.setScanCount(String.valueOf(scanCount));
-//        SubscriptionService subscriptionService = RetrofitClientInstance
-//                .getRetrofitInstance().create(SubscriptionService.class);
-//        Call<AddSubscriptionResponse> addSubscription = subscriptionService
-//                .addSubscription(preferenceHelper.getZerosnapToken(), preferenceHelper.getLicenceKey(),
-//                        preferenceHelper.getToken(), addSubscriptionRequest);
-//        RetrofitApiHelper<AddSubscriptionResponse> retrofitApiHelper =
-//                new RetrofitApiHelper<>();
-//        retrofitApiHelper.performApiCall(addSubscription,
-//                new IRetrofitApiHelper<AddSubscriptionResponse>() {
-//                    @Override
-//                    public void onSuccess(Response<AddSubscriptionResponse> response) {
-//                        Log.d("TAG", "Response OK ");
-//                        if (response.body().getStatus() == 200) {
-//                            selectedSubscriptionOrderId = response.body().getDataModel().getOrderId();
-//                            selectedSubscriptionSubscribeId = response.body().getDataModel().getRazorPaySubscriptionId();
-//                            startPayment(selectedSubscriptionSubscribeId, selectedSubscriptionOrderId, selectedSubscriptionAmount);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onError(String message) {
-//                        hideDialog();
-//                    }
-//                });
-//    }
+    public void processOrder() {
+        showDialog();
+        AddSubscriptionRequest addSubscriptionRequest = new AddSubscriptionRequest();
+        addSubscriptionRequest.setClientId(userId);
+        addSubscriptionRequest.setSubscriptionPlanId(selectedSubscriptionId);
+        addSubscriptionRequest.setTotalAmount(selectedSubscriptionAmount);
+        addSubscriptionRequest.setDeviceType("android");
+        addSubscriptionRequest.setDeviceToken("");
+        addSubscriptionRequest.setScanCount(String.valueOf(scanCount));
+        SubscriptionService subscriptionService = RetrofitClientInstance
+                .getRetrofitInstance().create(SubscriptionService.class);
+        Call<AddSubscriptionResponse> addSubscription = subscriptionService
+                .addSubscription(ZEROSNAP_TOKEN, LICENCE_KEY, addSubscriptionRequest);
+        RetrofitApiHelper<AddSubscriptionResponse> retrofitApiHelper =
+                new RetrofitApiHelper<>();
+        retrofitApiHelper.performApiCall(addSubscription,
+                new IRetrofitApiHelper<AddSubscriptionResponse>() {
+                    @Override
+                    public void onSuccess(Response<AddSubscriptionResponse> response) {
+                        Log.d("TAG", "Response OK ");
+                        if (response.body().getStatus() == 200) {
+                            selectedSubscriptionOrderId = response.body().getDataModel().getOrderId();
+                            selectedSubscriptionSubscribeId = response.body().getDataModel().getRazorPaySubscriptionId();
+                            startPayment(selectedSubscriptionSubscribeId, selectedSubscriptionOrderId, selectedSubscriptionAmount);
+                        }
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        hideDialog();
+                    }
+                });
+    }
 
     public void startPayment(String subscriptionId, String orderId, String amount) {
         changeDialogTitle("Configuring Payment...");
@@ -457,7 +337,7 @@ public class SubscriptionActivity extends Activity implements TextWatcher, Payme
              * Eg: "500" = INR 5.00
              */
             double amountInt = Double.parseDouble(amount) * 100;
-            options.put("amount", String.valueOf(amountInt));
+            options.put("amount", /*String.valueOf(amountInt)*/100);
 
             checkout.open(activity, options);
         } catch (Exception e) {
@@ -466,73 +346,72 @@ public class SubscriptionActivity extends Activity implements TextWatcher, Payme
     }
 
     public void changeDialogTitle(String title) {
-//        baseAlert.updateAlertTitle(title);
+        updateAlertTitle(title);
     }
 
     public void showDialog() {
-//        baseAlert.showProgressDialog("Processing...");
+        showProgressDialog("Processing...");
     }
 
     public void hideDialog() {
-//        baseAlert.hideProgressDialog();
+        hideProgressDialog();
     }
 
-//    public void verifySubscription() {
-//        showDialog();
-//        VerifySubscriptionRequest verifySubscriptionRequest = new VerifySubscriptionRequest();
-//        if (selectedSubscriptionId.equalsIgnoreCase(PAY_AS_YOU_GO_SUBSCRIPTION_ID))
-//            verifySubscriptionRequest.setOrderId(selectedSubscriptionOrderId);
-//        else
-//            verifySubscriptionRequest.setSubscriptionId(selectedSubscriptionSubscribeId);
-//        verifySubscriptionRequest.setPaymentId(selectedSubscriptionPaymentId);
-//        verifySubscriptionRequest.setSignature(selectedSubscriptionSecretId);
-//        SubscriptionService subscriptionService = RetrofitClientInstance
-//                .getRetrofitInstance().create(SubscriptionService.class);
-//        Call<VerifySubscriptionResponse> verifySubscription = subscriptionService
-//                .verifySubscription(preferenceHelper.getZerosnapToken(), preferenceHelper.getLicenceKey(),
-//                        preferenceHelper.getToken(), verifySubscriptionRequest);
-//        RetrofitApiHelper<VerifySubscriptionResponse> retrofitApiHelper =
-//                new RetrofitApiHelper<>();
-//        retrofitApiHelper.performApiCall(verifySubscription,
-//                new IRetrofitApiHelper<VerifySubscriptionResponse>() {
-//                    @Override
-//                    public void onSuccess(Response<VerifySubscriptionResponse> response) {
-//                        Log.d("TAG", "Response OK ");
-//                        if (response.body().getStatus() == 200) {
-//                            baseAlert.updateAlertTitle("Verified!");
-//                            new Handler().postDelayed(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    hideDialog();
-//                                    finish();
-//                                }
-//                            }, 2000);
-//                        } else if (response.body().getStatus() == 400) {
-//                            Toast.makeText(SubscriptionActivity.this,
-//                                    response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
-//                            hideDialog();
-//                            finish();
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onError(String message) {
-//                        hideDialog();
-//                        Toast.makeText(SubscriptionActivity.this,
-//                                message, Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//    }
+    public void verifySubscription() {
+        showDialog();
+        VerifySubscriptionRequest verifySubscriptionRequest = new VerifySubscriptionRequest();
+        if (selectedSubscriptionId.equalsIgnoreCase(PAY_AS_YOU_GO_SUBSCRIPTION_ID))
+            verifySubscriptionRequest.setOrderId(selectedSubscriptionOrderId);
+        else
+            verifySubscriptionRequest.setSubscriptionId(selectedSubscriptionSubscribeId);
+        verifySubscriptionRequest.setPaymentId(selectedSubscriptionPaymentId);
+        verifySubscriptionRequest.setSignature(selectedSubscriptionSecretId);
+        SubscriptionService subscriptionService = RetrofitClientInstance
+                .getRetrofitInstance().create(SubscriptionService.class);
+        Call<VerifySubscriptionResponse> verifySubscription = subscriptionService
+                .verifySubscription(ZEROSNAP_TOKEN,
+                        LICENCE_KEY, verifySubscriptionRequest);
+        RetrofitApiHelper<VerifySubscriptionResponse> retrofitApiHelper =
+                new RetrofitApiHelper<>();
+        retrofitApiHelper.performApiCall(verifySubscription,
+                new IRetrofitApiHelper<VerifySubscriptionResponse>() {
+                    @Override
+                    public void onSuccess(Response<VerifySubscriptionResponse> response) {
+                        Log.d("TAG", "Response OK ");
+                        if (response.body().getStatus() == 200) {
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    hideDialog();
+                                    navigateToSubscriptionPage();
+                                }
+                            }, 2000);
+                        } else if (response.body().getStatus() == 400) {
+                            Toast.makeText(SubscriptionActivity.this,
+                                    response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
+                            hideDialog();
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        hideDialog();
+                        Toast.makeText(SubscriptionActivity.this,
+                                message, Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
 
     @Override
     public void onPaymentSuccess(String s, PaymentData paymentData) {
 //        hideDialog();
-//        baseAlert.updateAlertTitle("Verifying Payment...");
-//        Log.d(TAG, "Success! " + s);
-//        selectedSubscriptionOrderId = paymentData.getOrderId();
-//        selectedSubscriptionPaymentId = paymentData.getPaymentId();
-//        selectedSubscriptionSecretId = paymentData.getSignature();
-//        verifySubscription();
+        updateAlertTitle("Verifying Payment...");
+        Log.d(TAG, "Success! " + s);
+        selectedSubscriptionOrderId = paymentData.getOrderId();
+        selectedSubscriptionPaymentId = paymentData.getPaymentId();
+        selectedSubscriptionSecretId = paymentData.getSignature();
+        verifySubscription();
     }
 
     @Override
@@ -548,5 +427,36 @@ public class SubscriptionActivity extends Activity implements TextWatcher, Payme
     protected void onStop() {
         super.onStop();
         hideDialog();
+    }
+
+    public void showProgressDialog(String title) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.myDialog));
+        View inflate = getLayoutInflater().inflate(R.layout.sweet_alert_progress,
+                null, false);
+        textView  = inflate.findViewById(R.id.statusTextView);
+        textView.setText(title);
+        builder.setView(inflate);
+        alertDialog = builder.create();
+        alertDialog.setCancelable(false);
+        Objects.requireNonNull(alertDialog.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        if (!alertDialog.isShowing())
+            alertDialog.show();
+    }
+
+    private void hideProgressDialog(){
+        if (alertDialog!=null)
+            alertDialog.dismiss();
+    }
+
+    private void updateAlertTitle(String title){
+        if (textView!=null)
+            textView.setText(title);
+    }
+
+    private void navigateToSubscriptionPage(){
+        Intent intent1 = new Intent(this,SubscriptionActivity.class);
+        intent1.putExtra(EXTRA_CLIENT_ID, userId);
+        intent1.putExtra(EXTRA_LICENCE_KEY,licenceKey);
+        startActivity(intent1);
     }
 }

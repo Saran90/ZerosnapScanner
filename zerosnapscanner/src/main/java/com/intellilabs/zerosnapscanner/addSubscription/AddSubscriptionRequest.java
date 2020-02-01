@@ -10,8 +10,8 @@ public class AddSubscriptionRequest {
     @SerializedName("subscription_plan_id")
     String subscriptionPlanId;
 
-    @SerializedName("branch_id")
-    String branchId;
+    @SerializedName("client_id")
+    String clientId;
 
     @SerializedName("device_token")
     String deviceToken;
@@ -62,11 +62,11 @@ public class AddSubscriptionRequest {
         this.subscriptionPlanId = subscriptionPlanId;
     }
 
-    public String getBranchId() {
-        return branchId;
+    public String getClientId() {
+        return clientId;
     }
 
-    public void setBranchId(String branchId) {
-        this.branchId = branchId;
+    public void setClientId(String clientId) {
+        this.clientId = clientId;
     }
 }
