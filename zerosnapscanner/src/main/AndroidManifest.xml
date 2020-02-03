@@ -3,15 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.intellilabs.zerosnapscanner">
 
-    <application
-        tools:node="merge">
-        <activity android:name=".ZerosnapScannerActivity"></activity>
-        <activity android:name=".SubscriptionActivity"></activity>
+    <application tools:node="merge">
+        <activity android:name=".InitActivity"></activity>
+        <activity android:name=".ZerosnapScannerActivity" />
+        <activity android:name=".SubscriptionActivity" />
 
         <meta-data
             android:name="com.razorpay.ApiKey"
             android:value="@string/razor_pay_key" />
-
     </application>
 
 </manifest>

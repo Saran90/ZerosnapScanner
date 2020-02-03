@@ -23,6 +23,7 @@ import com.intellilabs.zerosnapscanner.addSubscription.AddSubscriptionResponse;
 import com.intellilabs.zerosnapscanner.subscriptionPlans.SubscriptionPlansResponse;
 import com.intellilabs.zerosnapscanner.verifySubscription.VerifySubscriptionRequest;
 import com.intellilabs.zerosnapscanner.verifySubscription.VerifySubscriptionResponse;
+import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_DOCUMENT_TYPE;
 import com.razorpay.Checkout;
 import com.razorpay.PaymentData;
 import com.razorpay.PaymentResultWithDataListener;
@@ -77,6 +78,8 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
     Button yearlyPayButton;
 
     private TextView textView;
+
+    private String scanType;
 
     private List<SubscriptionPlansResponse.DataModel> subscriptDataModels;
     private String monthlyAmount = "";
@@ -146,6 +149,7 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         userId = getIntent().getStringExtra(EXTRA_USER_ID);
         licenceKey = getIntent().getStringExtra(EXTRA_LICENCE_KEY);
+        scanType = getIntent().getStringExtra(EXTRA_DOCUMENT_TYPE);
         loadViewForPackage();
         new FileDeleteAsync().execute();
     }
@@ -455,6 +459,7 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
 
     private void navigateToSubscriptionPage(){
         Intent intent1 = new Intent(this,SubscriptionActivity.class);
+        intent1.putExtra(EXTRA_DOCUMENT_TYPE,scanType);
         intent1.putExtra(EXTRA_CLIENT_ID, userId);
         intent1.putExtra(EXTRA_LICENCE_KEY,licenceKey);
         startActivity(intent1);
