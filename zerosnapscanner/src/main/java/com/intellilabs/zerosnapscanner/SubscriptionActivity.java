@@ -394,6 +394,7 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
                             Toast.makeText(SubscriptionActivity.this,
                                     response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
                             hideDialog();
+                            setResult(RESULT_CANCELED);
                             finish();
                         }
                     }
@@ -424,6 +425,7 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
         Log.d(TAG, s);
         Log.d(TAG, "Failed! " + s);
         Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+        setResult(RESULT_CANCELED);
         finish();
     }
 
@@ -458,10 +460,7 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
     }
 
     private void navigateToSubscriptionPage(){
-        Intent intent1 = new Intent(this,SubscriptionActivity.class);
-        intent1.putExtra(EXTRA_DOCUMENT_TYPE,scanType);
-        intent1.putExtra(EXTRA_CLIENT_ID, userId);
-        intent1.putExtra(EXTRA_LICENCE_KEY,licenceKey);
-        startActivity(intent1);
+        setResult(RESULT_OK);
+        finish();
     }
 }

@@ -1,31 +1,54 @@
 package com.intellilabs.zerosnapscanner;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+
+import com.intellilabs.zerosnapscanner.applicationdetails.GetApplicationDetailsResponse;
+import com.intellilabs.zerosnapscanner.checkSubscription.CheckSubscriptionResponse;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
 import static com.intellilabs.zerosnapscanner.SubscriptionActivity.LICENCE_KEY;
 import static com.intellilabs.zerosnapscanner.SubscriptionActivity.ZEROSNAP_TOKEN;
+import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_DOCUMENT_TYPE;
+import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_LICENCE_KEY;
+import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_USER_ID;
 
-public class InitActivity extends AppCompatActivity {
+public class InitActivity extends Activity {
+
+    private static final int SUBSCRIPTION_REQUEST_CODE = 123;
+
+    private static ZerosnapScannerCallback mZerosnapScannerCallback;
+    private static String userId;
+    private static ZerosnapScannerType mZerosnapScannerType;
+    private String licenceKey;
+    private String clientId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_init);
+
+        getApplicationDetails();
     }
 
-    public static Intent newIntent(Context context, ZerosnapScannerCallback zerosnapScannerCallback){
+    public static Intent newIntent(Context context,
+                                   ZerosnapScannerCallback zerosnapScannerCallback,
+                                   ZerosnapScannerType zerosnapScannerType,
+                                   String userid){
         mZerosnapScannerCallback = zerosnapScannerCallback;
-        return new Intent(context,ZerosnapScannerActivity.class);
+        mZerosnapScannerType = zerosnapScannerType;
+        userId = userid;
+        return new Intent(context,InitActivity.class);
     }
 
-    private static void checkSubscription() {
+    private void checkSubscription() {
         SubscriptionService subscriptionService = RetrofitClientInstance
                 .getRetrofitInstance().create(SubscriptionService.class);
         Call<CheckSubscriptionResponse> subscription = subscriptionService
@@ -65,19 +88,59 @@ public class InitActivity extends AppCompatActivity {
                 });
     }
 
-    private static void navigateToScanPage(){
-        Intent intent = ZerosnapScannerActivity.newIntent(mContext,mZerosnapScannerCallback);
+    private void navigateToScanPage(){
+        Intent intent = ZerosnapScannerActivity.newIntent(this,mZerosnapScannerCallback);
         intent.putExtra(EXTRA_DOCUMENT_TYPE,mZerosnapScannerType.name());
         intent.putExtra(EXTRA_LICENCE_KEY,licenceKey);
         intent.putExtra(EXTRA_USER_ID,userId);
-        mContext.startActivity(intent);
+        startActivity(intent);
     }
 
-    private static void navigateToSubscriptionPage(){
-        Intent intent1 = new Intent(mContext,SubscriptionActivity.class);
+    private void navigateToSubscriptionPage(){
+        Intent intent1 = new Intent(this,SubscriptionActivity.class);
         intent1.putExtra(EXTRA_USER_ID,userId);
         intent1.putExtra(EXTRA_LICENCE_KEY,licenceKey);
         intent1.putExtra(EXTRA_DOCUMENT_TYPE,mZerosnapScannerType.name());
-        mContext.startActivity(intent1);
+        startActivityForResult(intent1,SUBSCRIPTION_REQUEST_CODE);
+    }
+
+    private void getApplicationDetails() {
+        SubscriptionService subscriptionService = RetrofitClientInstance
+                .getRetrofitInstance().create(SubscriptionService.class);
+        Call<GetApplicationDetailsResponse> applicationDetails = subscriptionService
+                .getApplicationDetails(ZEROSNAP_TOKEN,
+                        LICENCE_KEY);
+        RetrofitApiHelper<GetApplicationDetailsResponse> retrofitApiHelper =
+                new RetrofitApiHelper<GetApplicationDetailsResponse>();
+        retrofitApiHelper.performApiCall(applicationDetails,
+                new IRetrofitApiHelper<GetApplicationDetailsResponse>() {
+                    @Override
+                    public void onSuccess(Response<GetApplicationDetailsResponse> response) {
+                        Log.d("TAG", "Response OK ");
+                        if (response.body().getStatus() == 200) {
+                            licenceKey = response.body().getDataModel().getClientLicenceKey();
+                            clientId = response.body().getDataModel().getClientId();
+                            checkSubscription();
+                        } else {
+
+                        }
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                    }
+                });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == SUBSCRIPTION_REQUEST_CODE){
+            if (resultCode == RESULT_OK){
+                navigateToScanPage();
+            }else {
+
+            }
+        }
     }
 }

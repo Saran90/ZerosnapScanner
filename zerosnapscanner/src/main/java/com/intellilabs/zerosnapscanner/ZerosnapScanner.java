@@ -60,47 +60,8 @@ public class ZerosnapScanner {
      * Scan document by redirecting to Scanning page.
      */
     public static void scan(){
-        if (clientId==null || licenceKey==null)
-            getApplicationDetails();
-        else
-            checkSubscription();
-    }
-
-    public void navigateToInitPage(){
-        Intent intent = ZerosnapScannerActivity.newIntent(mContext,mZerosnapScannerCallback);
-        intent.putExtra(EXTRA_DOCUMENT_TYPE,mZerosnapScannerType.name());
-        intent.putExtra(EXTRA_LICENCE_KEY,licenceKey);
-        intent.putExtra(EXTRA_USER_ID,userId);
+        Intent intent = InitActivity.newIntent(mContext,mZerosnapScannerCallback
+                ,mZerosnapScannerType,userId);
         mContext.startActivity(intent);
     }
-
-
-    private static void getApplicationDetails() {
-        SubscriptionService subscriptionService = RetrofitClientInstance
-                .getRetrofitInstance().create(SubscriptionService.class);
-        Call<GetApplicationDetailsResponse> applicationDetails = subscriptionService
-                .getApplicationDetails(ZEROSNAP_TOKEN,
-                        LICENCE_KEY);
-        RetrofitApiHelper<GetApplicationDetailsResponse> retrofitApiHelper =
-                new RetrofitApiHelper<GetApplicationDetailsResponse>();
-        retrofitApiHelper.performApiCall(applicationDetails,
-                new IRetrofitApiHelper<GetApplicationDetailsResponse>() {
-                    @Override
-                    public void onSuccess(Response<GetApplicationDetailsResponse> response) {
-                        Log.d("TAG", "Response OK ");
-                        if (response.body().getStatus() == 200) {
-                            licenceKey = response.body().getDataModel().getClientLicenceKey();
-                            clientId = response.body().getDataModel().getClientId();
-                            checkSubscription();
-                        } else {
-
-                        }
-                    }
-
-                    @Override
-                    public void onError(String message) {
-                    }
-                });
-    }
-
 }
