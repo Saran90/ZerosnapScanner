@@ -12,4 +12,5 @@
     <string name="conditions_apply">* All pricing provided are inclusive of Applicable Taxes (18% GST)</string>
     <string name="ruppee">\u20B9</string>
     <string name="razor_pay_key">rzp_live_pudmV4NPgu61RO</string>
+    <string name="processing">Processing...Please wait.</string>
 </resources>

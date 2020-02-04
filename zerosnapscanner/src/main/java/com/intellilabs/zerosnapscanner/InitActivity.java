@@ -139,7 +139,7 @@ public class InitActivity extends Activity {
             if (resultCode == RESULT_OK){
                 navigateToScanPage();
             }else {
-
+                finish();
             }
         }
     }
