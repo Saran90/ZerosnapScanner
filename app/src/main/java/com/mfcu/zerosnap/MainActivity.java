@@ -30,8 +30,7 @@ public class MainActivity extends AppCompatActivity {
         /*
         * Initializing Zerosnap Scanner with Document type and callback
         * */
-        ZerosnapScanner.init(this,
-                ZerosnapScannerType.PASSPORT, userId,new ZerosnapScannerCallback() {
+        ZerosnapScanner.init(this, userId,new ZerosnapScannerCallback() {
             @Override
             public void onPassportScanSuccess(PassportModel passportModel) {
                 String content = "First Name: "+passportModel.getFirstName();
@@ -82,6 +81,6 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Failed!", Toast.LENGTH_SHORT).show();
             }
         });
-        ZerosnapScanner.scan();
+        ZerosnapScanner.scan(ZerosnapScannerType.PASSPORT);
     }
 }

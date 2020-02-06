@@ -47,6 +47,7 @@ public class ZerosnapScannerActivity extends AppCompatActivity implements MRZSca
         documentType = getIntent().getStringExtra(EXTRA_DOCUMENT_TYPE);
 
         licence = getIntent().getStringExtra(EXTRA_LICENCE_KEY);
+//        licence = "F1F1889B599CCF807EE9673EEBE908A5D4BA634C7808EB861B899C4F28EFFA1FB554045EF21D2B93F18BFFAD5ECBCADA2168BE8020FE242C623A9D6E06BF2F15";
 
         mrzScanner = (MRZScanner) getSupportFragmentManager().findFragmentById(R.id.scannerFragment);
 

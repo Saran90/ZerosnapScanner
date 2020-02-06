@@ -45,21 +45,21 @@ public class ZerosnapScanner {
     /**
      * Initialize Zerosnap Scanner with document type and callback
      * @param context
-     * @param zerosnapScannerType
      * @param zerosnapScannerCallback
      */
-    public static void init(Context context,ZerosnapScannerType zerosnapScannerType,String id,
+    public static void init(Context context,String id,
                             ZerosnapScannerCallback zerosnapScannerCallback){
         mContext = context;
-        mZerosnapScannerType = zerosnapScannerType;
         mZerosnapScannerCallback = zerosnapScannerCallback;
         userId = id;
     }
 
     /**
      * Scan document by redirecting to Scanning page.
+     * @param zerosnapScannerType
      */
-    public static void scan(){
+    public static void scan(ZerosnapScannerType zerosnapScannerType){
+        mZerosnapScannerType = zerosnapScannerType;
         Intent intent = InitActivity.newIntent(mContext,mZerosnapScannerCallback
                 ,mZerosnapScannerType,userId);
         mContext.startActivity(intent);

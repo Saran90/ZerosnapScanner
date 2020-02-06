@@ -94,6 +94,7 @@ public class InitActivity extends Activity {
         intent.putExtra(EXTRA_LICENCE_KEY,licenceKey);
         intent.putExtra(EXTRA_USER_ID,userId);
         startActivity(intent);
+        finish();
     }
 
     private void navigateToSubscriptionPage(){

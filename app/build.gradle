@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.mfcu.zerosnap"
+        applicationId "com.idsnext.fortunecloudmobile"
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
