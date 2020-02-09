@@ -35,7 +35,8 @@ public interface SubscriptionService {
     @GET(APPLICATION_DETAILS)
     Call<GetApplicationDetailsResponse> getApplicationDetails(
             @Header(NETWORK_ZEROSNAP_AUTHORIZATION) String zerosnapToken,
-            @Header(NETWORK_LICENCE_KEY) String licenceKey
+            @Header(NETWORK_LICENCE_KEY) String licenceKey,
+            @Query("applicationid") String applicationid
     );
 
     @GET(CHECK_SUSCRIPTION)

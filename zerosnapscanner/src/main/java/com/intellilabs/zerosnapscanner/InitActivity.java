@@ -26,6 +26,7 @@ public class InitActivity extends Activity {
 
     private static ZerosnapScannerCallback mZerosnapScannerCallback;
     private static String userId;
+    private static String applicationId;
     private static ZerosnapScannerType mZerosnapScannerType;
     private String licenceKey;
     private String clientId;
@@ -38,16 +39,30 @@ public class InitActivity extends Activity {
         getApplicationDetails();
     }
 
+    /**
+     *
+     * @param context
+     * @param zerosnapScannerCallback
+     * @param zerosnapScannerType - Scanning type
+     * @param userid - id of user
+     * @param applicationid - application application id
+     * @return
+     */
     public static Intent newIntent(Context context,
                                    ZerosnapScannerCallback zerosnapScannerCallback,
                                    ZerosnapScannerType zerosnapScannerType,
-                                   String userid){
+                                   String userid,
+                                   String applicationid){
         mZerosnapScannerCallback = zerosnapScannerCallback;
         mZerosnapScannerType = zerosnapScannerType;
         userId = userid;
+        applicationId = applicationid;
         return new Intent(context,InitActivity.class);
     }
 
+    /**
+     * Remote call for checking the subscription of the logged user.
+     */
     private void checkSubscription() {
         SubscriptionService subscriptionService = RetrofitClientInstance
                 .getRetrofitInstance().create(SubscriptionService.class);
@@ -69,16 +84,19 @@ public class InitActivity extends Activity {
 
                                 if (subscriptionStatus.equalsIgnoreCase("0")) {
 //                                //If not subscribed
-                                    navigateToSubscriptionPage();
+//                                    navigateToSubscriptionPage();
+                                    navigateToScanPage();
                                 } else {
                                     //If subscribed
                                     navigateToScanPage();
                                 }
                             } else {
-                                navigateToSubscriptionPage();
+//                                navigateToSubscriptionPage();
+                                navigateToScanPage();
                             }
                         } else {
-                            navigateToSubscriptionPage();
+//                            navigateToSubscriptionPage();
+                            navigateToScanPage();
                         }
                     }
 
@@ -88,6 +106,9 @@ public class InitActivity extends Activity {
                 });
     }
 
+    /**
+     * Redirect to scan page.
+     */
     private void navigateToScanPage(){
         Intent intent = ZerosnapScannerActivity.newIntent(this,mZerosnapScannerCallback);
         intent.putExtra(EXTRA_DOCUMENT_TYPE,mZerosnapScannerType.name());
@@ -97,6 +118,9 @@ public class InitActivity extends Activity {
         finish();
     }
 
+    /**
+     * Redirect to subscription page
+     */
     private void navigateToSubscriptionPage(){
         Intent intent1 = new Intent(this,SubscriptionActivity.class);
         intent1.putExtra(EXTRA_USER_ID,userId);
@@ -105,12 +129,15 @@ public class InitActivity extends Activity {
         startActivityForResult(intent1,SUBSCRIPTION_REQUEST_CODE);
     }
 
+    /**
+     * Get application details corresponding to the application id
+     */
     private void getApplicationDetails() {
         SubscriptionService subscriptionService = RetrofitClientInstance
                 .getRetrofitInstance().create(SubscriptionService.class);
         Call<GetApplicationDetailsResponse> applicationDetails = subscriptionService
                 .getApplicationDetails(ZEROSNAP_TOKEN,
-                        LICENCE_KEY);
+                        LICENCE_KEY,applicationId);
         RetrofitApiHelper<GetApplicationDetailsResponse> retrofitApiHelper =
                 new RetrofitApiHelper<GetApplicationDetailsResponse>();
         retrofitApiHelper.performApiCall(applicationDetails,

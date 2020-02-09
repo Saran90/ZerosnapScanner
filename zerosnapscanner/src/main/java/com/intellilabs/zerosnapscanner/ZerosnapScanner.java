@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.intellilabs.zerosnapscanner.applicationdetails.GetApplicationDetailsResponse;
 import com.intellilabs.zerosnapscanner.checkSubscription.CheckSubscriptionResponse;
@@ -45,6 +46,7 @@ public class ZerosnapScanner {
     /**
      * Initialize Zerosnap Scanner with document type and callback
      * @param context
+     * @param id - userid
      * @param zerosnapScannerCallback
      */
     public static void init(Context context,String id,
@@ -52,6 +54,7 @@ public class ZerosnapScanner {
         mContext = context;
         mZerosnapScannerCallback = zerosnapScannerCallback;
         userId = id;
+        applicationId = context.getPackageName();
     }
 
     /**
@@ -61,7 +64,7 @@ public class ZerosnapScanner {
     public static void scan(ZerosnapScannerType zerosnapScannerType){
         mZerosnapScannerType = zerosnapScannerType;
         Intent intent = InitActivity.newIntent(mContext,mZerosnapScannerCallback
-                ,mZerosnapScannerType,userId);
+                ,mZerosnapScannerType,userId,applicationId);
         mContext.startActivity(intent);
     }
 }

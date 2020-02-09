@@ -47,11 +47,14 @@ public class ZerosnapScannerActivity extends AppCompatActivity implements MRZSca
         documentType = getIntent().getStringExtra(EXTRA_DOCUMENT_TYPE);
 
         licence = getIntent().getStringExtra(EXTRA_LICENCE_KEY);
-//        licence = "F1F1889B599CCF807EE9673EEBE908A5D4BA634C7808EB861B899C4F28EFFA1FB554045EF21D2B93F18BFFAD5ECBCADA2168BE8020FE242C623A9D6E06BF2F15";
 
+        ZerosnapScannerType zerosnapScannerType = ZerosnapScannerType.valueOf(documentType);
         mrzScanner = (MRZScanner) getSupportFragmentManager().findFragmentById(R.id.scannerFragment);
-
-        mrzScanner.setScannerType(ScannerType.SCANNER_TYPE_MRZ); // Options: [SCANNER_TYPE_MRZ, SCANNER_TYPE_DOC_IMAGE_ID, SCANNER_TYPE_DOC_IMAGE_PASSPORT]
+        if (zerosnapScannerType.equals(ZerosnapScannerType.DOCUMENT_IMAGE)){
+            mrzScanner.setScannerType(ScannerType.SCANNER_TYPE_DOC_IMAGE_ID); // Options: [SCANNER_TYPE_MRZ, SCANNER_TYPE_DOC_IMAGE_ID, SCANNER_TYPE_DOC_IMAGE_PASSPORT]
+        }else {
+            mrzScanner.setScannerType(ScannerType.SCANNER_TYPE_MRZ); // Options: [SCANNER_TYPE_MRZ, SCANNER_TYPE_DOC_IMAGE_ID, SCANNER_TYPE_DOC_IMAGE_PASSPORT]
+        }
 
         MRZScanner.setIDActive(true);          // Enable/disable the ID document type
 
@@ -62,6 +65,7 @@ public class ZerosnapScannerActivity extends AppCompatActivity implements MRZSca
         MRZScanner.setMaxThreads(2);           // Set the max CPU threads that the scanner can use
 
         MRZScanner.registerWithLicenseKey(this,licence);
+//        licence = "F1F1889B599CCF807EE9673EEBE908A5D4BA634C7808EB861B899C4F28EFFA1FB554045EF21D2B93F18BFFAD5ECBCADA2168BE8020FE242C623A9D6E06BF2F15";
     }
 
     @Override
@@ -142,7 +146,8 @@ public class ZerosnapScannerActivity extends AppCompatActivity implements MRZSca
 
     @Override
     public void successfulScanWithDocumentImage(Bitmap bitmap) {
-
+        mZerosnapScannerCallback.onDocumentImageCaptured(bitmap);
+        finish();
     }
 
     @Override

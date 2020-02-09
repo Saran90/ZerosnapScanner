@@ -16,6 +16,6 @@ public class ZerosnapApplication extends Application {
         /*
         * Register with licence key
         * */
-        ZerosnapScanner.register(BuildConfig.APPLICATION_ID);
+//        ZerosnapScanner.register(BuildConfig.APPLICATION_ID);
     }
 }
