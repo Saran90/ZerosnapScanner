@@ -1,1 +1,1 @@
-include ':app', ':zerosnapscanner'
+include ':zeroscan'
