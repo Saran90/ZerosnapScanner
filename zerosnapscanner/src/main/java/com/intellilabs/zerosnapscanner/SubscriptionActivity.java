@@ -334,7 +334,7 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
                 options.put("subscription_id", subscriptionId);
                 options.put("recurring", 1);
             }
-            options.put("currency", "INR");
+            options.put("currency", "USD");
 
             /**
              * Amount is always passed in currency subunits
