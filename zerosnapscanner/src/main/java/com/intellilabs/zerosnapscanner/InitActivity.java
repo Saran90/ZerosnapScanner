@@ -84,19 +84,16 @@ public class InitActivity extends Activity {
 
                                 if (subscriptionStatus.equalsIgnoreCase("0")) {
 //                                //If not subscribed
-//                                    navigateToSubscriptionPage();
-                                    navigateToScanPage();
+                                    navigateToSubscriptionPage();
                                 } else {
                                     //If subscribed
                                     navigateToScanPage();
                                 }
                             } else {
-//                                navigateToSubscriptionPage();
-                                navigateToScanPage();
+                                navigateToSubscriptionPage();
                             }
                         } else {
-//                            navigateToSubscriptionPage();
-                            navigateToScanPage();
+                            navigateToSubscriptionPage();
                         }
                     }
 
