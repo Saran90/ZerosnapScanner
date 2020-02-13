@@ -7,6 +7,7 @@ import com.mfcu.zerosnap.cancelSubscription.CancelSubscriptionRequest;
 import com.mfcu.zerosnap.cancelSubscription.CancelSubscriptionResponse;
 import com.mfcu.zerosnap.checkSubscription.CheckSubscriptionResponse;
 import com.mfcu.zerosnap.getSubscription.GetSubscriptionResponse;
+import com.mfcu.zerosnap.getcurrencies.GetCurrenciesResponse;
 import com.mfcu.zerosnap.subscriptionPlans.SubscriptionPlansResponse;
 import com.mfcu.zerosnap.verifySubscription.VerifySubscriptionRequest;
 import com.mfcu.zerosnap.verifySubscription.VerifySubscriptionResponse;
@@ -23,6 +24,7 @@ import static com.mfcu.zerosnap.NetworkUtils.ADD_SUSCRIPTION;
 import static com.mfcu.zerosnap.NetworkUtils.APPLICATION_DETAILS;
 import static com.mfcu.zerosnap.NetworkUtils.CANCEL_SUBSCRIPTION;
 import static com.mfcu.zerosnap.NetworkUtils.CHECK_SUSCRIPTION;
+import static com.mfcu.zerosnap.NetworkUtils.GET_CURRENCIES;
 import static com.mfcu.zerosnap.NetworkUtils.GET_SUBSCRIPTION;
 import static com.mfcu.zerosnap.NetworkUtils.NETWORK_AUTHORIZATION;
 import static com.mfcu.zerosnap.NetworkUtils.NETWORK_LICENCE_KEY;
@@ -81,5 +83,10 @@ public interface SubscriptionService {
             @Header(NETWORK_AUTHORIZATION) String auth,
             @Header(NETWORK_LICENCE_KEY) String licenceKey,
             @Body CancelSubscriptionRequest request
+    );
+
+    @GET(GET_CURRENCIES)
+    Call<GetCurrenciesResponse> getCurrecncies(
+            @Header(NETWORK_ZEROSNAP_AUTHORIZATION) String zerosnapToken
     );
 }

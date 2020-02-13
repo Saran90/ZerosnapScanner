@@ -17,6 +17,7 @@ public class NetworkUtils {
     public static final String VERIFY_SUSCRIPTION = "verifypayment.php";
     public static final String GET_SUBSCRIPTION = "subscription.php";
     public static final String CANCEL_SUBSCRIPTION = "payment.php";
+    public static final String GET_CURRENCIES = "currencies.php";
 
     public static final String NETWORK_AUTHORIZATION = "Access-Token";
     public static final String NETWORK_ZEROSNAP_AUTHORIZATION = "X-Zerosnap-Access-Token";

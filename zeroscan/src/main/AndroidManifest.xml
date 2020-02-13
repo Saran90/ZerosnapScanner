@@ -13,6 +13,11 @@
         android:theme="@style/AppTheme"
         tools:node="merge">
         <activity android:name="com.mfcu.zerosnap.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity android:name=".InitActivity"
             android:theme="@style/DialogActivity"></activity>
