@@ -16,9 +16,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.aakira.expandablelayout.ExpandableRelativeLayout;
 import com.mfcu.zerosnap.addSubscription.AddSubscriptionRequest;
 import com.mfcu.zerosnap.addSubscription.AddSubscriptionResponse;
+import com.mfcu.zerosnap.expandablelayout.ExpandableRelativeLayout;
 import com.mfcu.zerosnap.subscriptionPlans.SubscriptionPlansResponse;
 import com.mfcu.zerosnap.verifySubscription.VerifySubscriptionRequest;
 import com.mfcu.zerosnap.verifySubscription.VerifySubscriptionResponse;

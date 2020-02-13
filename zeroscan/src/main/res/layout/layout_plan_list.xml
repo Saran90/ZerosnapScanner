@@ -29,7 +29,7 @@
                 android:textColor="@color/white"
                 android:drawableRight="@drawable/ic_arrow_down"/>
 
-            <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+            <com.mfcu.zerosnap.expandablelayout.ExpandableRelativeLayout
                 android:id="@+id/erl_monthly"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
@@ -88,7 +88,7 @@
 
                 </RelativeLayout>
 
-            </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+            </com.mfcu.zerosnap.expandablelayout.ExpandableRelativeLayout>
 
             <TextView
                 android:id="@+id/tv_yearly"
@@ -102,7 +102,7 @@
                 android:textColor="@color/white"
                 android:drawableRight="@drawable/ic_arrow_down"/>
 
-            <com.github.aakira.expandablelayout.ExpandableRelativeLayout
+            <com.mfcu.zerosnap.expandablelayout.ExpandableRelativeLayout
                 android:id="@+id/erl_yearly"
                 android:layout_width="match_parent"
                 android:layout_height="120dp"
@@ -161,7 +161,7 @@
 
                 </RelativeLayout>
 
-            </com.github.aakira.expandablelayout.ExpandableRelativeLayout>
+            </com.mfcu.zerosnap.expandablelayout.ExpandableRelativeLayout>
 
         </LinearLayout>
 
