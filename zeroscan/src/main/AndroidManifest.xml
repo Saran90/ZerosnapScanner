@@ -19,10 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".InitActivity"
+        <activity android:name="com.mfcu.zerosnap.InitActivity"
             android:theme="@style/DialogActivity"></activity>
-        <activity android:name=".ZerosnapScannerActivity" />
-        <activity android:name=".SubscriptionActivity" />
+        <activity android:name="com.mfcu.zerosnap.ZerosnapScannerActivity" />
+        <activity android:name="com.mfcu.zerosnap.SubscriptionActivity" />
 
         <meta-data
             android:name="com.razorpay.ApiKey"
