@@ -275,6 +275,7 @@ public class InitActivity extends Activity implements AdapterView.OnItemSelected
 
     @Override
     public void onClick(View v) {
-        navigateToSubscriptionPage();
+//        navigateToSubscriptionPage();
+        navigateToScanPage();
     }
 }
