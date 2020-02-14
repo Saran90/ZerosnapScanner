@@ -1,5 +1,5 @@
-apply plugin: 'com.android.application'
-apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 group='com.intellilabs.zerosnapscan'
 android {
     compileSdkVersion 28
@@ -7,7 +7,7 @@ android {
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
-        versionName "1.4"
+        versionName "1.12"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
