@@ -28,6 +28,8 @@ import retrofit2.Response;
 
 import static com.mfcu.zerosnap.SubscriptionActivity.LICENCE_KEY;
 import static com.mfcu.zerosnap.SubscriptionActivity.ZEROSNAP_TOKEN;
+import static com.mfcu.zerosnap.ZerosnapScannerUtils.EXTRA_CURRENCY;
+import static com.mfcu.zerosnap.ZerosnapScannerUtils.EXTRA_CURRENCY_CODE;
 import static com.mfcu.zerosnap.ZerosnapScannerUtils.EXTRA_DOCUMENT_TYPE;
 import static com.mfcu.zerosnap.ZerosnapScannerUtils.EXTRA_LICENCE_KEY;
 import static com.mfcu.zerosnap.ZerosnapScannerUtils.EXTRA_USER_ID;
@@ -49,7 +51,7 @@ public class InitActivity extends Activity implements AdapterView.OnItemSelected
     private Spinner mCurrencySpinner;
     private Button mSubmit;
     String[] currencies;
-    private String selectedCurrency;
+    private String selectedCurrency,selectedCurrencyCode;
     private List<GetCurrenciesResponse.Data> currenciresModel = new ArrayList<>();
     private CurrencyListSpinnerAdapter currencyListSpinnerAdapter;
 
@@ -154,6 +156,8 @@ public class InitActivity extends Activity implements AdapterView.OnItemSelected
         intent1.putExtra(EXTRA_USER_ID,userId);
         intent1.putExtra(EXTRA_LICENCE_KEY,licenceKey);
         intent1.putExtra(EXTRA_DOCUMENT_TYPE,mZerosnapScannerType.name());
+        intent1.putExtra(EXTRA_CURRENCY,selectedCurrency);
+        intent1.putExtra(EXTRA_CURRENCY_CODE,selectedCurrencyCode);
         startActivityForResult(intent1,SUBSCRIPTION_REQUEST_CODE);
     }
 
@@ -258,8 +262,10 @@ public class InitActivity extends Activity implements AdapterView.OnItemSelected
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        selectedCurrency = String.valueOf(parent.getAdapter().getItem(position));
+        selectedCurrency = currenciresModel.get(position).getCurrencyCode();
+        selectedCurrencyCode = currenciresModel.get(position).getCurrencySymbol();
         Log.d("Selected currency: ",selectedCurrency);
+        Log.d("Selected currency Code: ",selectedCurrencyCode);
     }
 
     @Override
@@ -275,7 +281,7 @@ public class InitActivity extends Activity implements AdapterView.OnItemSelected
 
     @Override
     public void onClick(View v) {
-//        navigateToSubscriptionPage();
-        navigateToScanPage();
+        navigateToSubscriptionPage();
+//        navigateToScanPage();
     }
 }

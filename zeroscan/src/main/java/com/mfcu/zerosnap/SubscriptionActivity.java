@@ -31,10 +31,13 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringTokenizer;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
+import static com.mfcu.zerosnap.ZerosnapScannerUtils.EXTRA_CURRENCY;
+import static com.mfcu.zerosnap.ZerosnapScannerUtils.EXTRA_CURRENCY_CODE;
 import static com.mfcu.zerosnap.ZerosnapScannerUtils.EXTRA_DOCUMENT_TYPE;
 import static com.mfcu.zerosnap.ZerosnapScannerUtils.EXTRA_LICENCE_KEY;
 import static com.mfcu.zerosnap.ZerosnapScannerUtils.EXTRA_USER_ID;
@@ -91,6 +94,8 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
             selectedSubscriptionOrderId = "", selectedSubscriptionPaymentId = "",
             selectedSubscriptionSecretId = "";
     private String selectedSubscriptionSubscribeId = "";
+    private String selectedCurrency;
+    private String selectedCurrencyCode;
 
     public void onCloseClicked(View view) {
         setResult(RESULT_CANCELED);
@@ -118,25 +123,15 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
 
     public void onMonthlyPayClicked(View view) {
         scanCount = 0;
-        for (int i = 0; i < subscriptDataModels.size(); i++) {
-            if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                    .equalsIgnoreCase(MONTHLY_SUBSCRIPTION_ID)) {
-                selectedSubscriptionId = subscriptDataModels.get(i).getSubscriptionPlanId();
-                selectedSubscriptionAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-            }
-        }
+        selectedSubscriptionId = subscriptDataModels.get(0).getSubscriptionPlanId();
+        selectedSubscriptionAmount = subscriptDataModels.get(0).getSubscriptionAmount();
         processOrder();
     }
 
-    public void onAnnuallyPayClicked() {
+    public void onAnnuallyPayClicked(View view) {
         scanCount = 0;
-        for (int i = 0; i < subscriptDataModels.size(); i++) {
-            if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                    .equalsIgnoreCase(ANNUAL_SUBSCRIPTION_ID)) {
-                selectedSubscriptionId = subscriptDataModels.get(i).getSubscriptionPlanId();
-                selectedSubscriptionAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-            }
-        }
+        selectedSubscriptionId = subscriptDataModels.get(1).getSubscriptionPlanId();
+        selectedSubscriptionAmount = subscriptDataModels.get(1).getSubscriptionAmount();
         processOrder();
     }
 
@@ -148,6 +143,8 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
         userId = getIntent().getStringExtra(EXTRA_USER_ID);
         licenceKey = getIntent().getStringExtra(EXTRA_LICENCE_KEY);
         scanType = getIntent().getStringExtra(EXTRA_DOCUMENT_TYPE);
+        selectedCurrency = getIntent().getStringExtra(EXTRA_CURRENCY);
+        selectedCurrencyCode = getIntent().getStringExtra(EXTRA_CURRENCY_CODE);
         loadViewForPackage();
         new FileDeleteAsync().execute();
     }
@@ -218,7 +215,7 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
                 .getRetrofitInstance().create(SubscriptionService.class);
         Call<SubscriptionPlansResponse> subscriptionPlans = subscriptionService
                 .subscriptionPlans(ZEROSNAP_TOKEN,
-                        LICENCE_KEY);
+                        LICENCE_KEY,selectedCurrency);
         RetrofitApiHelper<SubscriptionPlansResponse> retrofitApiHelper =
                 new RetrofitApiHelper<SubscriptionPlansResponse>();
         retrofitApiHelper.performApiCall(subscriptionPlans,
@@ -229,24 +226,15 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
                         if (response.body().getStatus() == 200) {
                             subscriptDataModels =
                                     response.body().getDataModel();
-                            for (int i = 0; i < subscriptDataModels.size(); i++) {
-                                if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                                        .equalsIgnoreCase("1")) {
-                                    monthlyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                                        .equalsIgnoreCase("2")) {
-                                    annualAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                                        .equalsIgnoreCase("5")) {
-                                    weeklyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                                        .equalsIgnoreCase("4")) {
-                                    dailyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-                                }
-                            }
-
-                            monthlyPriceTextView.setText(getString(R.string.ruppee) + monthlyAmount);
-                            annuallyPriceTextView.setText(getString(R.string.ruppee) + annualAmount);
+                            monthlyAmount = subscriptDataModels.get(0).getSubscriptionAmount();
+                            annualAmount = subscriptDataModels.get(1).getSubscriptionAmount();
+                            StringTokenizer stringTokenizer = new StringTokenizer(monthlyAmount," ");
+                            StringTokenizer stringTokenizer1 = new StringTokenizer(annualAmount," ");
+                            stringTokenizer.nextToken();
+                            stringTokenizer1.nextToken();
+                            String currency = Utils.getCurrencySymbol(selectedCurrency);
+                            monthlyPriceTextView.setText(currency+stringTokenizer.nextToken());
+                            annuallyPriceTextView.setText(currency+stringTokenizer1.nextToken());
                         }
                     }
 
@@ -332,7 +320,7 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
                 options.put("subscription_id", subscriptionId);
                 options.put("recurring", 1);
             }
-            options.put("currency", "USD");
+            options.put("currency", selectedCurrencyCode);
 
             /**
              * Amount is always passed in currency subunits

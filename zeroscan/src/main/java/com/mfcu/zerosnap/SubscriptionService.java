@@ -52,7 +52,8 @@ public interface SubscriptionService {
     @GET(SUBSCRIPTIONS)
     Call<SubscriptionPlansResponse> subscriptionPlans(
             @Header(NETWORK_ZEROSNAP_AUTHORIZATION) String zerosnapToken,
-            @Header(NETWORK_LICENCE_KEY) String licenceKey
+            @Header(NETWORK_LICENCE_KEY) String licenceKey,
+            @Query("currency_code") String currency
     );
 
     @POST(ADD_SUSCRIPTION)
