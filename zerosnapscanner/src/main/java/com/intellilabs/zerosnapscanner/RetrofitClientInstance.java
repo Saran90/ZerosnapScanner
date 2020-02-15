@@ -13,6 +13,7 @@ import static com.intellilabs.zerosnapscanner.NetworkUtils.NETWORK_CONNECT_TIME_
 import static com.intellilabs.zerosnapscanner.NetworkUtils.NETWORK_READ_TIME_OUT;
 import static com.intellilabs.zerosnapscanner.NetworkUtils.NETWORK_WRITE_TIME_OUT;
 
+
 public class RetrofitClientInstance {
 
     private static Retrofit retrofit;
@@ -30,7 +31,7 @@ public class RetrofitClientInstance {
 
     public static Retrofit getRetrofitInstance() {
         if (retrofit == null) {
-            retrofit = new retrofit2.Retrofit.Builder()
+            retrofit = new Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(okHttpClient)

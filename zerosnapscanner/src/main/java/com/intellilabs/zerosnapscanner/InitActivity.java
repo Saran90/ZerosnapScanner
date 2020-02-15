@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.intellilabs.zerosnapscanner.applicationdetails.GetApplicationDetailsResponse;
 import com.intellilabs.zerosnapscanner.checkSubscription.CheckSubscriptionResponse;
@@ -99,6 +100,8 @@ public class InitActivity extends Activity {
 
                     @Override
                     public void onError(String message) {
+                        Toast.makeText(InitActivity.this, message, Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                 });
     }
@@ -147,12 +150,15 @@ public class InitActivity extends Activity {
                             clientId = response.body().getDataModel().getClientId();
                             checkSubscription();
                         } else {
-
+                            Toast.makeText(InitActivity.this, response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
+                            finish();
                         }
                     }
 
                     @Override
                     public void onError(String message) {
+                        Toast.makeText(InitActivity.this, message, Toast.LENGTH_SHORT).show();
+                        finish();
                     }
                 });
     }

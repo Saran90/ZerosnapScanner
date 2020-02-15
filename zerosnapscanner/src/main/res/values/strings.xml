@@ -13,4 +13,6 @@
     <string name="ruppee">\u0024</string>
     <string name="razor_pay_key">rzp_live_pudmV4NPgu61RO</string>
     <string name="processing">Processing...Please wait.</string>
+    <string name="select_currency_title">Select Currency</string>
+    <string name="submit">Submit</string>
 </resources>

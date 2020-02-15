@@ -4,6 +4,8 @@
     package="com.intellilabs.zerosnapscanner">
 
     <application tools:node="merge">
+        <activity android:name=".MainActivity">
+        </activity>
         <activity android:name=".InitActivity"
             android:theme="@style/DialogActivity"></activity>
         <activity android:name=".ZerosnapScannerActivity" />

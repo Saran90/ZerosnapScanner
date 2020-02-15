@@ -1,7 +1,6 @@
 package com.intellilabs.zerosnapscanner;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -23,7 +22,6 @@ import com.intellilabs.zerosnapscanner.addSubscription.AddSubscriptionResponse;
 import com.intellilabs.zerosnapscanner.subscriptionPlans.SubscriptionPlansResponse;
 import com.intellilabs.zerosnapscanner.verifySubscription.VerifySubscriptionRequest;
 import com.intellilabs.zerosnapscanner.verifySubscription.VerifySubscriptionResponse;
-import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_DOCUMENT_TYPE;
 import com.razorpay.Checkout;
 import com.razorpay.PaymentData;
 import com.razorpay.PaymentResultWithDataListener;
@@ -33,11 +31,14 @@ import org.json.JSONObject;
 import java.io.File;
 import java.util.List;
 import java.util.Objects;
+import java.util.StringTokenizer;
 
 import retrofit2.Call;
 import retrofit2.Response;
 
-import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_CLIENT_ID;
+import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_CURRENCY;
+import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_CURRENCY_CODE;
+import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_DOCUMENT_TYPE;
 import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_LICENCE_KEY;
 import static com.intellilabs.zerosnapscanner.ZerosnapScannerUtils.EXTRA_USER_ID;
 
@@ -93,6 +94,8 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
             selectedSubscriptionOrderId = "", selectedSubscriptionPaymentId = "",
             selectedSubscriptionSecretId = "";
     private String selectedSubscriptionSubscribeId = "";
+    private String selectedCurrency;
+    private String selectedCurrencyCode;
 
     public void onCloseClicked(View view) {
         setResult(RESULT_CANCELED);
@@ -120,25 +123,15 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
 
     public void onMonthlyPayClicked(View view) {
         scanCount = 0;
-        for (int i = 0; i < subscriptDataModels.size(); i++) {
-            if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                    .equalsIgnoreCase(MONTHLY_SUBSCRIPTION_ID)) {
-                selectedSubscriptionId = subscriptDataModels.get(i).getSubscriptionPlanId();
-                selectedSubscriptionAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-            }
-        }
+        selectedSubscriptionId = subscriptDataModels.get(0).getSubscriptionPlanId();
+        selectedSubscriptionAmount = subscriptDataModels.get(0).getSubscriptionAmount();
         processOrder();
     }
 
-    public void onAnnuallyPayClicked() {
+    public void onAnnuallyPayClicked(View view) {
         scanCount = 0;
-        for (int i = 0; i < subscriptDataModels.size(); i++) {
-            if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                    .equalsIgnoreCase(ANNUAL_SUBSCRIPTION_ID)) {
-                selectedSubscriptionId = subscriptDataModels.get(i).getSubscriptionPlanId();
-                selectedSubscriptionAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-            }
-        }
+        selectedSubscriptionId = subscriptDataModels.get(1).getSubscriptionPlanId();
+        selectedSubscriptionAmount = subscriptDataModels.get(1).getSubscriptionAmount();
         processOrder();
     }
 
@@ -150,6 +143,8 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
         userId = getIntent().getStringExtra(EXTRA_USER_ID);
         licenceKey = getIntent().getStringExtra(EXTRA_LICENCE_KEY);
         scanType = getIntent().getStringExtra(EXTRA_DOCUMENT_TYPE);
+        selectedCurrency = getIntent().getStringExtra(EXTRA_CURRENCY);
+        selectedCurrencyCode = getIntent().getStringExtra(EXTRA_CURRENCY_CODE);
         loadViewForPackage();
         new FileDeleteAsync().execute();
     }
@@ -216,11 +211,12 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
     }
 
     public void getSubscriptionPlans() {
+        showDialog();
         SubscriptionService subscriptionService = RetrofitClientInstance
                 .getRetrofitInstance().create(SubscriptionService.class);
         Call<SubscriptionPlansResponse> subscriptionPlans = subscriptionService
                 .subscriptionPlans(ZEROSNAP_TOKEN,
-                        LICENCE_KEY);
+                        LICENCE_KEY,selectedCurrency);
         RetrofitApiHelper<SubscriptionPlansResponse> retrofitApiHelper =
                 new RetrofitApiHelper<SubscriptionPlansResponse>();
         retrofitApiHelper.performApiCall(subscriptionPlans,
@@ -228,32 +224,29 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
                     @Override
                     public void onSuccess(Response<SubscriptionPlansResponse> response) {
                         Log.d("TAG", "Response OK ");
+                        hideDialog();
                         if (response.body().getStatus() == 200) {
                             subscriptDataModels =
                                     response.body().getDataModel();
-                            for (int i = 0; i < subscriptDataModels.size(); i++) {
-                                if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                                        .equalsIgnoreCase("1")) {
-                                    monthlyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                                        .equalsIgnoreCase("2")) {
-                                    annualAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                                        .equalsIgnoreCase("5")) {
-                                    weeklyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-                                } else if (subscriptDataModels.get(i).getSubscriptionPlanId()
-                                        .equalsIgnoreCase("4")) {
-                                    dailyAmount = subscriptDataModels.get(i).getSubscriptionAmount();
-                                }
-                            }
-
-                            monthlyPriceTextView.setText(getString(R.string.ruppee) + monthlyAmount);
-                            annuallyPriceTextView.setText(getString(R.string.ruppee) + annualAmount);
+                            monthlyAmount = subscriptDataModels.get(0).getSubscriptionAmount();
+                            annualAmount = subscriptDataModels.get(1).getSubscriptionAmount();
+                            String currency = Utils.getCurrencySymbol(selectedCurrency);
+                            monthlyPriceTextView.setText(currency+monthlyAmount);
+                            annuallyPriceTextView.setText(currency+annualAmount);
+                        }else {
+                            Toast.makeText(SubscriptionActivity.this, response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
+                            setResult(RESULT_CANCELED);
+                            finish();
                         }
                     }
 
                     @Override
                     public void onError(String message) {
+                        hideDialog();
+                        Toast.makeText(SubscriptionActivity.this,
+                                message, Toast.LENGTH_SHORT).show();
+                        setResult(RESULT_CANCELED);
+                        finish();
                     }
                 });
     }
@@ -278,16 +271,22 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
                     @Override
                     public void onSuccess(Response<AddSubscriptionResponse> response) {
                         Log.d("TAG", "Response OK ");
+                        hideDialog();
                         if (response.body().getStatus() == 200) {
                             selectedSubscriptionOrderId = response.body().getDataModel().getOrderId();
                             selectedSubscriptionSubscribeId = response.body().getDataModel().getRazorPaySubscriptionId();
                             startPayment(selectedSubscriptionSubscribeId, selectedSubscriptionOrderId, selectedSubscriptionAmount);
+                        }else {
+                            Toast.makeText(SubscriptionActivity.this,
+                                    response.body().getStatusMessage(),
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
 
                     @Override
                     public void onError(String message) {
                         hideDialog();
+                        Toast.makeText(SubscriptionActivity.this, message, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -334,7 +333,8 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
                 options.put("subscription_id", subscriptionId);
                 options.put("recurring", 1);
             }
-            options.put("currency", "USD");
+            options.put("currency", selectedCurrency);
+            Log.d("Currency: ",selectedCurrency);
 
             /**
              * Amount is always passed in currency subunits
@@ -382,6 +382,7 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
                     @Override
                     public void onSuccess(Response<VerifySubscriptionResponse> response) {
                         Log.d("TAG", "Response OK ");
+                        hideDialog();
                         if (response.body().getStatus() == 200) {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
@@ -391,6 +392,12 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
                                 }
                             }, 2000);
                         } else if (response.body().getStatus() == 400) {
+                            Toast.makeText(SubscriptionActivity.this,
+                                    response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
+                            hideDialog();
+                            setResult(RESULT_CANCELED);
+                            finish();
+                        }else {
                             Toast.makeText(SubscriptionActivity.this,
                                     response.body().getStatusMessage(), Toast.LENGTH_SHORT).show();
                             hideDialog();
