@@ -19,8 +19,19 @@ public class AddSubscriptionRequest {
     @SerializedName("device_type")
     String deviceType;
 
+    @SerializedName("currency_code")
+    String currencyCode;
+
     @SerializedName("scan_count")
     String scanCount;
+
+    public String getCurrencyCode() {
+        return currencyCode;
+    }
+
+    public void setCurrencyCode(String currencyCode) {
+        this.currencyCode = currencyCode;
+    }
 
     public String getDeviceToken() {
         return deviceToken;

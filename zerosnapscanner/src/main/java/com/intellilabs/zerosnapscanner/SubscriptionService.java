@@ -7,6 +7,7 @@ import com.intellilabs.zerosnapscanner.cancelSubscription.CancelSubscriptionRequ
 import com.intellilabs.zerosnapscanner.cancelSubscription.CancelSubscriptionResponse;
 import com.intellilabs.zerosnapscanner.checkSubscription.CheckSubscriptionResponse;
 import com.intellilabs.zerosnapscanner.getSubscription.GetSubscriptionResponse;
+import com.intellilabs.zerosnapscanner.getcurrencies.GetCurrenciesResponse;
 import com.intellilabs.zerosnapscanner.subscriptionPlans.SubscriptionPlansResponse;
 import com.intellilabs.zerosnapscanner.verifySubscription.VerifySubscriptionRequest;
 import com.intellilabs.zerosnapscanner.verifySubscription.VerifySubscriptionResponse;
@@ -23,6 +24,7 @@ import static com.intellilabs.zerosnapscanner.NetworkUtils.ADD_SUSCRIPTION;
 import static com.intellilabs.zerosnapscanner.NetworkUtils.APPLICATION_DETAILS;
 import static com.intellilabs.zerosnapscanner.NetworkUtils.CANCEL_SUBSCRIPTION;
 import static com.intellilabs.zerosnapscanner.NetworkUtils.CHECK_SUSCRIPTION;
+import static com.intellilabs.zerosnapscanner.NetworkUtils.GET_CURRENCIES;
 import static com.intellilabs.zerosnapscanner.NetworkUtils.GET_SUBSCRIPTION;
 import static com.intellilabs.zerosnapscanner.NetworkUtils.NETWORK_AUTHORIZATION;
 import static com.intellilabs.zerosnapscanner.NetworkUtils.NETWORK_LICENCE_KEY;
@@ -81,5 +83,10 @@ public interface SubscriptionService {
             @Header(NETWORK_AUTHORIZATION) String auth,
             @Header(NETWORK_LICENCE_KEY) String licenceKey,
             @Body CancelSubscriptionRequest request
+    );
+
+    @GET(GET_CURRENCIES)
+    Call<GetCurrenciesResponse> getCurrecncies(
+            @Header(NETWORK_ZEROSNAP_AUTHORIZATION) String zerosnapToken
     );
 }

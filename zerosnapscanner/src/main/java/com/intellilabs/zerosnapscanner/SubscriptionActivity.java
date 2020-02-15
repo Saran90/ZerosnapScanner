@@ -259,6 +259,7 @@ public class SubscriptionActivity extends Activity implements PaymentResultWithD
         addSubscriptionRequest.setTotalAmount(selectedSubscriptionAmount);
         addSubscriptionRequest.setDeviceType("android");
         addSubscriptionRequest.setDeviceToken("");
+        addSubscriptionRequest.setCurrencyCode(selectedCurrency);
         addSubscriptionRequest.setScanCount(String.valueOf(scanCount));
         SubscriptionService subscriptionService = RetrofitClientInstance
                 .getRetrofitInstance().create(SubscriptionService.class);
